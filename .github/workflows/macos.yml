@@ -1,0 +1,30 @@
+name: MacOS
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]')"
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: configure
+      run: cmake -Bbuild
+      
+    - name: build
+      run: cmake --build build --config $BUILD_TYPE -j4
+
+    - name: run
+      run: |
+        ./build/mkp_lookup_table_straight
+        ./build/mkp_lookup_table_35

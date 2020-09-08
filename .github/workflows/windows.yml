@@ -1,0 +1,30 @@
+name: Windows
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]')"
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: configure
+      run: cmake -Bbuild
+      
+    - name: build
+      run: cmake --build build --config "$env:BUILD_TYPE" -j4
+
+    - name: run
+      run: |
+        ./build/${{ env.BUILD_TYPE }}/mkp_lookup_table_straight.exe
+        ./build/${{ env.BUILD_TYPE }}/mkp_lookup_table_35.exe
